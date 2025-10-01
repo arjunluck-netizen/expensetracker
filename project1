@@ -1,0 +1,102 @@
+import json
+
+expenses = []
+budget = 0.0
+
+def display_menu():
+    """Displays the main menu for the expense tracker."""
+    print("\nPersonal Expense Tracker Menu:")
+    print("1. Add expense")
+    print("2. View expenses")
+    print("3. Set and track budget")
+    print("4. Save expenses")
+    print("5. Load expenses")
+    print("6. Exit")
+
+def add_expense():
+    """Adds a new expense to the list."""
+    try:
+        description = input("Enter expense description: ")
+        amount = float(input("Enter expense amount: "))
+        expenses.append({"description": description, "amount": amount})
+        print("Expense added successfully!")
+    except ValueError:
+        print("Invalid amount. Please enter a number.")
+
+def view_expenses():
+    """Displays all recorded expenses."""
+    if not expenses:
+        print("No expenses recorded yet.")
+    else:
+        print("\n--- Expenses ---")
+        for expense in expenses:
+            print(f"- {expense['description']}: ${expense['amount']:.2f}")
+        print("----------------")
+
+def set_budget():
+    """Sets the monthly budget."""
+    global budget
+    try:
+        budget = float(input("Enter your monthly budget: "))
+        print(f"Budget set to ${budget:.2f}")
+    except ValueError:
+        print("Invalid amount. Please enter a number.")
+
+def track_budget():
+    """Calculates and displays the remaining budget."""
+    total_expenses = sum(expense['amount'] for expense in expenses)
+    remaining_budget = budget - total_expenses
+    print(f"\n--- Budget Tracking ---")
+    print(f"Total expenses: ${total_expenses:.2f}")
+    print(f"Monthly budget: ${budget:.2f}")
+    print(f"Remaining budget: ${remaining_budget:.2f}")
+    print("-----------------------")
+
+
+def save_expenses(filename="expenses.json"):
+    """Saves the current expenses to a JSON file."""
+    try:
+        with open(filename, 'w') as f:
+            json.dump(expenses, f)
+        print(f"Expenses saved to {filename}")
+    except IOError:
+        print(f"Error saving expenses to {filename}")
+
+def load_expenses(filename="expenses.json"):
+    """Loads expenses from a JSON file."""
+    global expenses
+    try:
+        with open(filename, 'r') as f:
+            expenses = json.load(f)
+        print(f"Expenses loaded from {filename}")
+    except (IOError, json.JSONDecodeError):
+        print(f"Error loading expenses from {filename} or file not found.")
+        expenses = [] # Reset expenses if loading fails
+
+
+def main():
+    """Main function to run the expense tracker."""
+    load_expenses() # Load expenses on startup
+    while True:
+        display_menu()
+        choice = input("Enter your choice: ")
+
+        if choice == '1':
+            add_expense()
+        elif choice == '2':
+            view_expenses()
+        elif choice == '3':
+            set_budget()
+            track_budget()
+        elif choice == '4':
+            save_expenses()
+        elif choice == '5':
+            load_expenses()
+        elif choice == '6':
+            print("Exiting Personal Expense Tracker. Goodbye!")
+            break
+        else:
+            print("Invalid choice. Please try again.")
+
+if __name__ == "__main__":
+    main()
